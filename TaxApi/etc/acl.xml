@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Acl/etc/acl.xsd">
+    <acl>
+        <resources>
+            <resource id="Magento_Backend::admin">
+                <resource id="Insead_TaxApi::main" title="INSEAD Tax" sortOrder="100">
+                    <resource id="Insead_TaxApi::test" title="Tax Calculator Test" sortOrder="10"/>
+                    <resource id="Insead_TaxApi::log"  title="Tax Calculation Logs" sortOrder="20"/>
+                </resource>
+                <resource id="Magento_Backend::stores">
+                    <resource id="Magento_Backend::stores_settings">
+                        <resource id="Magento_Config::config">
+                            <resource id="Insead_TaxApi::config" title="INSEAD Tax Configuration" sortOrder="100"/>
+                        </resource>
+                    </resource>
+                </resource>
+            </resource>
+        </resources>
+    </acl>
+</config>

@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add id="Insead_TaxApi::main" title="INSEAD Tax" module="Insead_TaxApi"
+             sortOrder="100" resource="Insead_TaxApi::main"/>
+        <add id="Insead_TaxApi::test" title="Tax Calculator Test" module="Insead_TaxApi"
+             sortOrder="10" parent="Insead_TaxApi::main"
+             action="insead_taxapi/test/index" resource="Insead_TaxApi::test"/>
+        <add id="Insead_TaxApi::log" title="Calculation Logs" module="Insead_TaxApi"
+             sortOrder="20" parent="Insead_TaxApi::main"
+             action="insead_taxapi/log/index" resource="Insead_TaxApi::log"/>
+    </menu>
+</config>

@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+
+    <preference for="Insead\TaxApi\Api\TaxCalculationInterface"
+                type="Insead\TaxApi\Model\TaxCalculation"/>
+
+    <preference for="Insead\TaxApi\Api\Data\TaxResponseInterface"
+                type="Insead\TaxApi\Model\Data\TaxResponse"/>
+
+    <preference for="Insead\TaxApi\Api\Data\LineItemInterface"
+                type="Insead\TaxApi\Model\Data\LineItem"/>
+
+    <preference for="Insead\TaxApi\Api\Data\LineItemResultInterface"
+                type="Insead\TaxApi\Model\Data\LineItemResult"/>
+
+    <preference for="Magento\Tax\Model\Rate\Source"
+                type="Insead\TaxApi\Model\Rate\Source"/>
+
+    <preference for="Magento\Tax\Controller\Adminhtml\Rule\AjaxLoadRates"
+                type="Insead\TaxApi\Controller\Adminhtml\Rule\AjaxLoadRates"/>
+
+    <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
+        <arguments>
+            <argument name="collections" xsi:type="array">
+                <item name="insead_taxapi_log_listing_data_source" xsi:type="string">
+                    Insead\TaxApi\Model\ResourceModel\TaxCalculationLog\Grid\Collection
+                </item>
+            </argument>
+        </arguments>
+    </type>
+
+    <virtualType name="Insead\TaxApi\Model\ResourceModel\TaxCalculationLog\Grid\Collection"
+                 type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+        <arguments>
+            <argument name="mainTable"     xsi:type="string">insead_taxapi_calculation_log</argument>
+            <argument name="resourceModel" xsi:type="string">Insead\TaxApi\Model\ResourceModel\TaxCalculationLog</argument>
+        </arguments>
+    </virtualType>
+
+</config>

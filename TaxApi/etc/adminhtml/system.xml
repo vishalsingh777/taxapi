@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="insead" translate="label" sortOrder="400">
+            <label>INSEAD</label>
+        </tab>
+        <section id="insead_taxapi" translate="label" sortOrder="10"
+                 showInDefault="1" showInWebsite="0" showInStore="0">
+            <tab>insead</tab>
+            <label>Tax Calculation</label>
+            <resource>Insead_TaxApi::config</resource>
+            <group id="log_cleanup" translate="label" sortOrder="10"
+                   showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Log Cleanup</label>
+                <field id="retention_days" translate="label comment" type="text"
+                       sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Log Retention (Days)</label>
+                    <comment>Logs older than this are deleted by the nightly cron (02:00 server time). Set to 0 to disable. Recommended: 90 days for operational data, 2555 days (~7 years) for tax audit compliance.</comment>
+                    <validate>required-entry validate-digits</validate>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

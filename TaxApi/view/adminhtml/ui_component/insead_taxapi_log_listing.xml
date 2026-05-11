@@ -1,0 +1,122 @@
+<?xml version="1.0"?>
+<listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">insead_taxapi_log_listing.insead_taxapi_log_listing_data_source</item>
+        </item>
+    </argument>
+    <settings>
+        <spinner>insead_taxapi_log_columns</spinner>
+        <deps><dep>insead_taxapi_log_listing.insead_taxapi_log_listing_data_source</dep></deps>
+        <buttons>
+            <button name="test">
+                <url path="insead_taxapi/test/index"/>
+                <class>primary</class>
+                <label translate="true">Test Tax Calculator</label>
+            </button>
+        </buttons>
+    </settings>
+    <dataSource name="insead_taxapi_log_listing_data_source" component="Magento_Ui/js/grid/provider">
+        <settings>
+            <storageConfig><param name="indexField" xsi:type="string">log_id</param></storageConfig>
+            <updateUrl path="mui/index/render"/>
+        </settings>
+        <aclResource>Insead_TaxApi::log</aclResource>
+        <dataProvider class="Magento\Framework\View\Element\UiComponent\DataProvider\DataProvider"
+                      name="insead_taxapi_log_listing_data_source">
+            <settings>
+                <requestFieldName>log_id</requestFieldName>
+                <primaryFieldName>log_id</primaryFieldName>
+            </settings>
+        </dataProvider>
+    </dataSource>
+    <listingToolbar name="listing_top">
+        <settings><sticky>true</sticky></settings>
+        <bookmark name="bookmarks"/>
+        <columnsControls name="columns_controls"/>
+        <filterSearch name="fulltext"/>
+        <massaction name="listing_massaction">
+            <action name="delete">
+                <settings>
+                    <confirm>
+                        <message translate="true">Are you sure you want to delete the selected log entries?</message>
+                        <title translate="true">Delete Log Entries</title>
+                    </confirm>
+                    <url path="insead_taxapi/log/massDelete"/>
+                    <type>delete</type>
+                    <label translate="true">Delete</label>
+                </settings>
+            </action>
+        </massaction>
+        <filters name="listing_filters">
+            <settings>
+                <templates><filters><select>
+                    <param name="template" xsi:type="string">ui/grid/filters/elements/ui-select</param>
+                    <param name="component" xsi:type="string">Magento_Ui/js/form/element/ui-select</param>
+                </select></filters></templates>
+            </settings>
+            <filterSelect name="status" provider="${ $.parentName }">
+                <settings>
+                    <options class="Insead\TaxApi\Model\Source\Status"/>
+                    <caption translate="true">Select...</caption>
+                    <label translate="true">Status</label>
+                    <dataScope>status</dataScope>
+                    <imports><link name="visible">componentType = column, index = ${ $.index }:visible</link></imports>
+                </settings>
+            </filterSelect>
+        </filters>
+        <exportButton name="export_button">
+            <settings>
+                <options>
+                    <option name="csv" xsi:type="array">
+                        <item name="value" xsi:type="string">csv</item>
+                        <item name="label" xsi:type="string" translate="true">CSV</item>
+                        <item name="url" xsi:type="string">insead_taxapi/log/export</item>
+                    </option>
+                    <option name="xml" xsi:type="array">
+                        <item name="value" xsi:type="string">xml</item>
+                        <item name="label" xsi:type="string" translate="true">Excel XML</item>
+                        <item name="url" xsi:type="string">insead_taxapi/log/export</item>
+                    </option>
+                </options>
+            </settings>
+        </exportButton>
+        <paging name="listing_paging"/>
+    </listingToolbar>
+    <columns name="insead_taxapi_log_columns">
+        <selectionsColumn name="ids"><settings><indexField>log_id</indexField></settings></selectionsColumn>
+        <column name="log_id"><settings><filter>textRange</filter><label translate="true">ID</label><sorting>desc</sorting></settings></column>
+        <column name="created_at" class="Magento\Ui\Component\Listing\Columns\Date" component="Magento_Ui/js/grid/columns/date">
+            <settings><filter>dateRange</filter><dataType>date</dataType><label translate="true">Date/Time</label></settings>
+        </column>
+        <column name="legal_entity"><settings><filter>text</filter><label translate="true">Legal Entity</label></settings></column>
+        <column name="customer_type"><settings><filter>text</filter><label translate="true">Customer Type</label></settings></column>
+        <column name="is_valid_vat"><settings><filter>text</filter><label translate="true">VAT Registered</label></settings></column>
+        <column name="gst_exempt"><settings><filter>text</filter><label translate="true">GST Exempt</label></settings></column>
+        <column name="is_tax_registered"><settings><filter>text</filter><label translate="true">Tax Registered</label></settings></column>
+        <column name="product_class"><settings><filter>text</filter><label translate="true">Tax Product Code(s)</label></settings></column>
+        <column name="billing_country"><settings><filter>text</filter><label translate="true">Billing Country</label></settings></column>
+        <column name="programme_delivery_location"><settings><filter>text</filter><label translate="true">Delivery Location</label></settings></column>
+        <column name="participant_country"><settings><filter>text</filter><label translate="true">Participant Country</label></settings></column>
+        <column name="vat_number"><settings><filter>text</filter><label translate="true">VAT Number</label></settings></column>
+        <column name="subtotal" class="Magento\Catalog\Ui\Component\Listing\Columns\Price">
+            <settings><filter>textRange</filter><label translate="true">Subtotal</label></settings>
+        </column>
+        <column name="currency"><settings><filter>text</filter><label translate="true">Currency</label></settings></column>
+        <column name="status" component="Magento_Ui/js/grid/columns/select">
+            <settings><options class="Insead\TaxApi\Model\Source\Status"/><filter>select</filter><dataType>select</dataType><label translate="true">Status</label></settings>
+        </column>
+        <column name="tax_rate"><settings><filter>textRange</filter><label translate="true">Tax Rate (%)</label></settings></column>
+        <column name="tax_amount" class="Magento\Catalog\Ui\Component\Listing\Columns\Price">
+            <settings><filter>textRange</filter><label translate="true">Tax Amount</label></settings>
+        </column>
+        <column name="grand_total" class="Magento\Catalog\Ui\Component\Listing\Columns\Price">
+            <settings><filter>textRange</filter><label translate="true">Grand Total</label></settings>
+        </column>
+        <column name="tax_comment"><settings><filter>text</filter><label translate="true">Tax Comment</label></settings></column>
+        <column name="billing_system"><settings><filter>text</filter><label translate="true">Billing System</label></settings></column>
+        <column name="programme_type"><settings><filter>text</filter><label translate="true">Programme Type</label></settings></column>
+        <column name="line_items"><settings><filter>text</filter><label translate="true">Line Items</label><bodyTmpl>ui/grid/cells/html</bodyTmpl></settings></column>
+    </columns>
+</listing>
