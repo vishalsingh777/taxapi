@@ -15,14 +15,35 @@ use Magento\Framework\DataObject;
  */
 class LineItem extends DataObject implements LineItemInterface
 {
-    public function getTaxProductCode(): string
+    public function getProductFamily(): string
     {
-        return (string) $this->getData('tax_product_code');
+        return (string) $this->getData('product_family');
     }
 
-    public function setTaxProductCode(string $taxProductCode): self
+    public function setProductFamily(string $productFamily): self
     {
-        return $this->setData('tax_product_code', $taxProductCode);
+        return $this->setData('product_family', $productFamily);
+    }
+
+    public function getDeliveryMode(): string
+    {
+        return (string) $this->getData('delivery_mode');
+    }
+
+    public function setDeliveryMode(string $deliveryMode): self
+    {
+        return $this->setData('delivery_mode', $deliveryMode);
+    }
+
+    public function getDuration(): ?string
+    {
+        $v = $this->getData('duration');
+        return $v !== null ? (string) $v : null;
+    }
+
+    public function setDuration(?string $duration): self
+    {
+        return $this->setData('duration', $duration);
     }
 
     public function getPrice(): float
@@ -45,16 +66,6 @@ class LineItem extends DataObject implements LineItemInterface
         return $this->setData('qty', $qty);
     }
 
-    public function getSku(): ?string
-    {
-        return $this->getData('sku');
-    }
-
-    public function setSku(?string $sku): self
-    {
-        return $this->setData('sku', $sku);
-    }
-
     public function getName(): ?string
     {
         return $this->getData('name');
@@ -67,15 +78,16 @@ class LineItem extends DataObject implements LineItemInterface
 
     /**
      * Convert to plain array for internal use in TaxCalculation service.
-     * Allows the rest of the code to work with arrays as before.
      */
     public function toArray(array $keys = []): array
     {
         return [
-            'tax_product_code' => $this->getTaxProductCode(),
-            'price'            => $this->getPrice(),
-            'qty'              => $this->getQty(),
-            'name'             => $this->getName(),
+            'product_family' => $this->getProductFamily(),
+            'delivery_mode'  => $this->getDeliveryMode(),
+            'duration'       => $this->getDuration(),
+            'price'          => $this->getPrice(),
+            'qty'            => $this->getQty(),
+            'name'           => $this->getName() ?? '',
         ];
     }
 }

@@ -7,14 +7,13 @@
 
         <column xsi:type="int"       name="log_id"                        unsigned="true" nullable="false" identity="true" comment="Log ID"/>
         <column xsi:type="varchar"   name="legal_entity"                  nullable="false" length="10"  comment="Legal Entity: FBL SGP UAE USA"/>
-        <column xsi:type="varchar"   name="customer_type"                 nullable="false" length="50"  comment="Base Customer Type: B2B B2C"/>
-        <column xsi:type="smallint"  name="is_valid_vat"                  nullable="true"  default="0"  comment="Is Valid VAT: 0/1"/>
-        <column xsi:type="smallint"  name="gst_exempt"                    nullable="true"  default="0"  comment="GST Exempt: 0/1"/>
-        <column xsi:type="smallint"  name="is_tax_registered"             nullable="true"  default="0"  comment="Is Tax Registered: 0/1"/>
-        <column xsi:type="varchar"   name="product_class"                 nullable="false" length="255" comment="Tax Product Code(s)"/>
+        <column xsi:type="varchar"   name="customer_type"                 nullable="false" length="50"  comment="Customer Type: B2B B2C"/>
+        <column xsi:type="varchar"   name="tax_status"                    nullable="true"  length="50"  comment="Tax Status: Tax Registered / Not Tax Registered / Tax Exempt"/>
+        <column xsi:type="smallint"  name="gst_declaration_accepted"       nullable="true"  default="0"  comment="GST Declaration Accepted: 0/1 — SGP B2B only"/>
+        <column xsi:type="smallint"  name="outside_sg"                       nullable="true"  default="1"  comment="Outside Singapore: 0=inside SG override billing to SG, 1=outside SG use actual billing country — SGP B2C OOP only"/>
+        <column xsi:type="varchar"   name="product_class"                 nullable="false" length="255" comment="Product Family / Families"/>
         <column xsi:type="varchar"   name="billing_country"               nullable="false" length="2"   comment="Billing Country ISO2"/>
         <column xsi:type="varchar"   name="programme_delivery_location"   nullable="false" length="10"  comment="Programme Delivery Location: FBL SGP UAE USA NA"/>
-        <column xsi:type="varchar"   name="participant_country"           nullable="true"  length="2"   comment="Participant Country ISO2 during programme"/>
         <column xsi:type="varchar"   name="vat_number"                    nullable="true"  length="255" comment="VAT Number"/>
         <column xsi:type="decimal"   name="subtotal"     scale="4" precision="12" unsigned="false" nullable="false" comment="Subtotal"/>
         <column xsi:type="varchar"   name="currency"                      nullable="false" length="3"   comment="Currency ISO3"/>
@@ -27,20 +26,21 @@
         <column xsi:type="decimal"   name="grand_total"  scale="4" precision="12" unsigned="false" nullable="true" comment="Grand Total"/>
         <column xsi:type="text"      name="tax_comment"                   nullable="true"              comment="INSEAD Tax Comment from rule"/>
         <column xsi:type="varchar"   name="billing_system"                nullable="true"  length="100" comment="Source Billing System"/>
-        <column xsi:type="varchar"   name="programme_type"                nullable="true"  length="50"  comment="Programme Type e.g. OOP, OEP, CSP"/>
         <column xsi:type="timestamp" name="created_at"   on_update="false" nullable="false" default="CURRENT_TIMESTAMP" comment="Created At"/>
 
         <constraint xsi:type="primary" referenceId="PRIMARY">
             <column name="log_id"/>
         </constraint>
 
-        <index referenceId="INSEAD_TAXAPI_LOG_LEGAL_ENTITY"   indexType="btree"><column name="legal_entity"/></index>
-        <index referenceId="INSEAD_TAXAPI_LOG_CUSTOMER_TYPE"  indexType="btree"><column name="customer_type"/></index>
+        <index referenceId="INSEAD_TAXAPI_LOG_LEGAL_ENTITY"    indexType="btree"><column name="legal_entity"/></index>
+        <index referenceId="INSEAD_TAXAPI_LOG_CUSTOMER_TYPE"   indexType="btree"><column name="customer_type"/></index>
+        <index referenceId="INSEAD_TAXAPI_LOG_TAX_STATUS"      indexType="btree"><column name="tax_status"/></index>
+        <index referenceId="INSEAD_TAXAPI_LOG_GST_DECL"        indexType="btree"><column name="gst_declaration_accepted"/></index>
         <index referenceId="INSEAD_TAXAPI_LOG_BILLING_COUNTRY" indexType="btree"><column name="billing_country"/></index>
-        <index referenceId="INSEAD_TAXAPI_LOG_PDL"            indexType="btree"><column name="programme_delivery_location"/></index>
-        <index referenceId="INSEAD_TAXAPI_LOG_STATUS"         indexType="btree"><column name="status"/></index>
-        <index referenceId="INSEAD_TAXAPI_LOG_CREATED_AT"     indexType="btree"><column name="created_at"/></index>
-        <index referenceId="INSEAD_TAXAPI_LOG_BILLING_SYSTEM" indexType="btree"><column name="billing_system"/></index>
+        <index referenceId="INSEAD_TAXAPI_LOG_PDL"             indexType="btree"><column name="programme_delivery_location"/></index>
+        <index referenceId="INSEAD_TAXAPI_LOG_STATUS"          indexType="btree"><column name="status"/></index>
+        <index referenceId="INSEAD_TAXAPI_LOG_CREATED_AT"      indexType="btree"><column name="created_at"/></index>
+        <index referenceId="INSEAD_TAXAPI_LOG_BILLING_SYSTEM"  indexType="btree"><column name="billing_system"/></index>
 
     </table>
 </schema>

@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace Insead\TaxApi\Controller\Adminhtml\Rule;
 
 use Magento\Framework\App\Action\Context;

@@ -29,7 +29,6 @@ interface LineItemResultInterface
      */
     public function setCode(string $code): self;
 
-
     /**
      * Get product name (passed in request, echoed back for reference).
      *
@@ -46,14 +45,14 @@ interface LineItemResultInterface
     public function setName(?string $name): self;
 
     /**
-     * Get the tax product code used to construct the Magento SKU.
+     * Get the tax product code descriptor (product_family_delivery_mode).
      *
      * @return string
      */
     public function getTaxProductCode(): string;
 
     /**
-     * Set tax product code.
+     * Set tax product code descriptor.
      *
      * @param string $taxProductCode
      * @return $this
@@ -149,4 +148,52 @@ interface LineItemResultInterface
      * @return $this
      */
     public function setRowTotalInclTax(float $rowTotalInclTax): self;
+
+    /**
+     * Get the INSEAD tax comment from the matched tax rule for this line item.
+     * Used for invoice display (e.g. "GST @9%", "Reverse-charge: Customer to pay the VAT").
+     *
+     * @return string|null
+     */
+    public function getTaxComment(): ?string;
+
+    /**
+     * Set tax comment.
+     *
+     * @param string|null $taxComment
+     * @return $this
+     */
+    public function setTaxComment(?string $taxComment): self;
+
+    /**
+     * Get the Fusion tax code from the matched tax rule for this line item.
+     * Used for integration with Fusion (e.g. to determine tax recovery rate).
+     *
+     * @return string|null
+     */
+    public function getFusionTaxCode(): ?string;
+
+    /**
+     * Set Fusion tax code.
+     *
+     * @param string|null $fusionTaxCode
+     * @return $this
+     */
+    public function setFusionTaxCode(?string $fusionTaxCode): self;
+
+    /**
+     * Get the tax article from the matched tax rule for this line item.
+     * Used for invoice display (e.g. "Autoliquidation – Article 196 de la Directive 2006/112/CE").
+     *
+     * @return string|null
+     */
+    public function getTaxArticle(): ?string;
+
+    /**
+     * Set tax article.
+     *
+     * @param string|null $taxArticle
+     * @return $this
+     */
+    public function setTaxArticle(?string $taxArticle): self;
 }

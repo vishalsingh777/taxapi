@@ -28,23 +28,21 @@ class Calculate extends Action
         try {
             $params = $this->getRequest()->getParams();
 
-            $legalEntity                = strtoupper(trim($params['legal_entity']   ?? ''));
-            $customerType               = strtoupper(trim($params['customer_type']  ?? ''));
-            $isValidVat                 = isset($params['is_valid_vat'])   ? (bool) $params['is_valid_vat']   : null;
-            $gstExempt                  = isset($params['gst_exempt'])     ? (bool) $params['gst_exempt']     : null;
-            $isTaxRegistered            = isset($params['is_tax_registered']) ? (bool) $params['is_tax_registered'] : null;
-            $programmeType              = !empty($params['programme_type'])
-                                            ? strtoupper(trim($params['programme_type']))
-                                            : null;
-            $billingCountry             = strtoupper(trim($params['billing_country'] ?? ''));
-            $subtotal                   = (float) ($params['subtotal']              ?? 0);
-            $currency                   = strtoupper(trim($params['currency']       ?? 'EUR'));
-            $programmeDeliveryLocation  = strtoupper(trim($params['programme_delivery_location'] ?? 'NA'));
-            $participantCountry         = !empty($params['participant_country'])
-                                            ? strtoupper(trim($params['participant_country']))
-                                            : null;
-            $vatNumber                  = !empty($params['vat_number'])   ? $params['vat_number']   : null;
-            $billingSystem              = !empty($params['billing_system']) ? $params['billing_system'] : null;
+            $legalEntity               = strtoupper(trim($params['legal_entity']   ?? ''));
+            $customerType              = strtoupper(trim($params['customer_type']  ?? ''));
+            $taxStatus               = !empty($params['tax_status']) ? trim($params['tax_status']) : null;
+            $gstDeclarationAccepted  = isset($params['gst_declaration_accepted'])
+                                        ? (bool) $params['gst_declaration_accepted']
+                                        : null;
+            $outsideSg               = isset($params['outside_sg'])
+                                        ? (bool) $params['outside_sg']
+                                        : null;
+            $billingCountry            = strtoupper(trim($params['billing_country'] ?? ''));
+            $subtotal                  = (float) ($params['subtotal']              ?? 0);
+            $currency                  = strtoupper(trim($params['currency']       ?? 'EUR'));
+            $programmeDeliveryLocation = strtoupper(trim($params['programme_delivery_location'] ?? 'NA'));
+            $vatNumber                 = !empty($params['vat_number'])    ? $params['vat_number']    : null;
+            $billingSystem             = !empty($params['billing_system']) ? $params['billing_system'] : null;
 
             // Validate and decode line items
             $lineItems = [];
@@ -69,11 +67,9 @@ class Calculate extends Action
                 $currency,
                 $lineItems,
                 $programmeDeliveryLocation,
-                $programmeType,
-                $isValidVat,
-                $gstExempt,
-                $isTaxRegistered,
-                $participantCountry,
+                $taxStatus,
+                $gstDeclarationAccepted,
+                $outsideSg,
                 $vatNumber,
                 $billingSystem
             );

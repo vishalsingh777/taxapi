@@ -8,9 +8,6 @@ namespace Insead\TaxApi\Block\Adminhtml\Test;
 
 use Magento\Backend\Block\Template;
 use Magento\Backend\Block\Template\Context;
-use Magento\Tax\Api\TaxClassRepositoryInterface;
-use Magento\Framework\Api\SearchCriteriaBuilder;
-use Magento\Customer\Api\GroupRepositoryInterface;
 use Magento\Directory\Model\ResourceModel\Country\CollectionFactory as CountryCollectionFactory;
 
 class Form extends Template
@@ -23,18 +20,36 @@ class Form extends Template
     ];
 
     private const DELIVERY_LOCATIONS = [
-        'NA'  => 'NA — Not applicable (OOP, Cases, Food)',
+        'NA'  => 'NA — Not applicable (Online, OOP)',
         'FBL' => 'FBL — Fontainebleau campus',
         'SGP' => 'SGP — Singapore campus',
         'UAE' => 'UAE — Abu Dhabi campus',
         'USA' => 'USA — North America campus',
     ];
 
+    private const TAX_STATUSES = [
+        ''                    => '-- Not specified --',
+        'Tax Registered'      => 'Tax Registered',
+        'Not Tax Registered'  => 'Not Tax Registered',
+        'Tax Exempt'          => 'Tax Exempt',
+    ];
+
+    private const PRODUCT_FAMILIES = [
+        'OEP' => 'OEP — Open Enrollment Programme',
+        'CSP' => 'CSP — Customized Solutions Programme',
+        'CST' => 'CST — Custom Short Training',
+        'DP'  => 'DP — Degree Programme',
+        'OOP' => 'OOP — Online Open Programme',
+    ];
+
+    private const DELIVERY_MODES = [
+        'Online'       => 'Online',
+        'F2F'          => 'F2F — Face to Face',
+        'Live Virtual' => 'Live Virtual',
+    ];
+
     public function __construct(
         Context $context,
-        private readonly TaxClassRepositoryInterface $taxClassRepository,
-        private readonly SearchCriteriaBuilder $searchCriteriaBuilder,
-        private readonly GroupRepositoryInterface $customerGroupRepository,
         private readonly CountryCollectionFactory $countryCollectionFactory,
         array $data = []
     ) {
@@ -42,45 +57,19 @@ class Form extends Template
     }
 
     /** @return array<string, string> */
-    public function getLegalEntities(): array
-    {
-        return self::LEGAL_ENTITIES;
-    }
+    public function getLegalEntities(): array { return self::LEGAL_ENTITIES; }
 
     /** @return array<string, string> */
-    public function getDeliveryLocations(): array
-    {
-        return self::DELIVERY_LOCATIONS;
-    }
+    public function getDeliveryLocations(): array { return self::DELIVERY_LOCATIONS; }
 
-    /**
-     * Customer tax class names from customer groups.
-     *
-     * @return array<string, string>
-     */
-    public function getCustomerTaxClasses(): array
-    {
-        $classes = [];
-        try {
-            $groups = $this->customerGroupRepository
-                ->getList($this->searchCriteriaBuilder->create())
-                ->getItems();
+    /** @return array<string, string> */
+    public function getTaxStatuses(): array { return self::TAX_STATUSES; }
 
-            foreach ($groups as $group) {
-                try {
-                    $taxClass       = $this->taxClassRepository->get($group->getTaxClassId());
-                    $name           = $taxClass->getClassName();
-                    $classes[$name] = $name;
-                } catch (\Exception $e) {
-                    continue;
-                }
-            }
-        } catch (\Exception $e) {
-            // Return empty on error — form still renders
-        }
+/** @return array<string, string> */
+    public function getProductFamilies(): array { return self::PRODUCT_FAMILIES; }
 
-        return $classes;
-    }
+    /** @return array<string, string> */
+    public function getDeliveryModes(): array { return self::DELIVERY_MODES; }
 
     /** @return array<string, string> */
     public function getCountries(): array

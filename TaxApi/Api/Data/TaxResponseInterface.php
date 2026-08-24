@@ -16,7 +16,7 @@ namespace Insead\TaxApi\Api\Data;
 interface TaxResponseInterface
 {
     /**
-     * Get response status: success, warning, or error.
+     * Get response status: success or error. No warning status — all failures return error.
      *
      * @return string
      */
@@ -149,22 +149,6 @@ interface TaxResponseInterface
      * @return $this
      */
     public function setFallbackApplied(?bool $applied): self;
-
-    /**
-     * Get the custom INSEAD tax comment from the matched tax rule.
-     * Used for invoice display (e.g. "Reverse-charge: Customer to pay the VAT").
-     *
-     * @return string|null
-     */
-    public function getTaxComment(): ?string;
-
-    /**
-     * Set tax comment.
-     *
-     * @param string|null $comment
-     * @return $this
-     */
-    public function setTaxComment(?string $comment): self;
 
     /**
      * Get per-line-item tax breakdown.

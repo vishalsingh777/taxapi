@@ -92,13 +92,12 @@
         </column>
         <column name="legal_entity"><settings><filter>text</filter><label translate="true">Legal Entity</label></settings></column>
         <column name="customer_type"><settings><filter>text</filter><label translate="true">Customer Type</label></settings></column>
-        <column name="is_valid_vat"><settings><filter>text</filter><label translate="true">VAT Registered</label></settings></column>
-        <column name="gst_exempt"><settings><filter>text</filter><label translate="true">GST Exempt</label></settings></column>
-        <column name="is_tax_registered"><settings><filter>text</filter><label translate="true">Tax Registered</label></settings></column>
-        <column name="product_class"><settings><filter>text</filter><label translate="true">Tax Product Code(s)</label></settings></column>
+        <column name="tax_status"><settings><filter>text</filter><label translate="true">Tax Status</label></settings></column>
+        <column name="gst_declaration_accepted"><settings><filter>text</filter><label translate="true">GST Declaration Accepted</label></settings></column>
+        <column name="outside_sg"><settings><filter>text</filter><label translate="true">Outside SG</label></settings></column>
+        <column name="product_class"><settings><filter>text</filter><label translate="true">Product Family</label></settings></column>
         <column name="billing_country"><settings><filter>text</filter><label translate="true">Billing Country</label></settings></column>
         <column name="programme_delivery_location"><settings><filter>text</filter><label translate="true">Delivery Location</label></settings></column>
-        <column name="participant_country"><settings><filter>text</filter><label translate="true">Participant Country</label></settings></column>
         <column name="vat_number"><settings><filter>text</filter><label translate="true">VAT Number</label></settings></column>
         <column name="subtotal" class="Magento\Catalog\Ui\Component\Listing\Columns\Price">
             <settings><filter>textRange</filter><label translate="true">Subtotal</label></settings>
@@ -116,7 +115,6 @@
         </column>
         <column name="tax_comment"><settings><filter>text</filter><label translate="true">Tax Comment</label></settings></column>
         <column name="billing_system"><settings><filter>text</filter><label translate="true">Billing System</label></settings></column>
-        <column name="programme_type"><settings><filter>text</filter><label translate="true">Programme Type</label></settings></column>
         <column name="line_items"><settings><filter>text</filter><label translate="true">Line Items</label><bodyTmpl>ui/grid/cells/html</bodyTmpl></settings></column>
     </columns>
 </listing>

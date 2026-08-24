@@ -1,9 +1,11 @@
 <?php
 /** @var \Insead\TaxApi\Block\Adminhtml\Test\Form $block */
-$legalEntities      = $block->getLegalEntities();
-$deliveryLocations  = $block->getDeliveryLocations();
-$customerClasses    = $block->getCustomerTaxClasses();
-$countries          = $block->getCountries();
+$legalEntities     = $block->getLegalEntities();
+$deliveryLocations = $block->getDeliveryLocations();
+$taxStatuses       = $block->getTaxStatuses();
+$productFamilies   = $block->getProductFamilies();
+$deliveryModes     = $block->getDeliveryModes();
+$countries         = $block->getCountries();
 ?>
 <div class="insead-tax-calculator">
 <style>
@@ -13,16 +15,16 @@ $countries          = $block->getCountries();
 @media(max-width:1100px){.tax-main-wrapper{flex-direction:column}.tax-form-section,.tax-result{flex:1 1 100%;min-height:auto}}
 .tax-form-section h2,.tax-result h2{font-size:20px;border-bottom:1px solid #eee;padding-bottom:10px;margin-bottom:20px;color:#222}
 .tax-form-row{display:flex;align-items:flex-start;margin-bottom:14px}
-.tax-form-row label{flex:0 0 200px;font-weight:600;color:#333;padding-top:8px;font-size:13px}
+.tax-form-row label{flex:0 0 210px;font-weight:600;color:#333;padding-top:8px;font-size:13px}
 .tax-form-row .fw{flex:1}
 .tax-form-row input,.tax-form-row select,.tax-form-row textarea{width:100%;padding:7px 10px;border-radius:4px;border:1px solid #ccc;box-sizing:border-box;font-size:13px}
 .tax-form-row input:focus,.tax-form-row select:focus,.tax-form-row textarea:focus{border-color:#007bdb;outline:none}
 .fhelp{font-size:11px;color:#888;margin-top:3px;line-height:1.4}
-.checkbox-row{display:flex;align-items:center;gap:8px;margin-bottom:14px;padding-left:200px}
-.checkbox-row input[type=checkbox]{width:16px;height:16px;cursor:pointer}
+.checkbox-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:14px;padding-left:210px}
+.checkbox-row input[type=checkbox]{width:16px;height:16px;cursor:pointer;margin-top:2px;flex-shrink:0}
 .checkbox-row label{font-size:13px;color:#333;cursor:pointer;font-weight:500}
 .section-sep{border:none;border-top:1px dashed #ddd;margin:14px 0}
-.section-label{font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;padding-left:200px}
+.section-label{font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;padding-left:210px}
 .tax-calculate-btn{background:#007bdb;color:#fff;padding:10px 24px;border-radius:5px;border:none;font-size:14px;cursor:pointer}
 .tax-calculate-btn:hover{background:#0062b8}
 .tax-calculate-btn:disabled{opacity:.6;cursor:not-allowed}
@@ -37,27 +39,28 @@ $countries          = $block->getCountries();
 .tax-result pre{background:#fff;padding:15px;border:1px solid #ddd;border-radius:6px;overflow-x:auto;max-height:400px;font-size:11px}
 .code-eg{background:#f5f5f5;border:1px solid #ddd;border-radius:4px;padding:8px 10px;font-family:monospace;font-size:11px;margin-top:5px;white-space:pre;overflow-x:auto}
 .sku-preview{background:#e8f4fd;border:1px solid #b8d9f0;border-radius:4px;padding:6px 10px;font-family:monospace;font-size:12px;color:#0c447c;margin-top:6px}
+.badge-sgp{background:#e8f4fd;border:1px solid #b8d9f0;border-radius:4px;padding:2px 7px;font-size:10px;color:#0c447c;margin-left:4px;font-weight:normal}
+.badge-b2b{background:#f0f9e8;border:1px solid #b8dcb8;border-radius:4px;padding:2px 7px;font-size:10px;color:#2a6a2a;margin-left:4px;font-weight:normal}
+.badge-b2c{background:#fff3e0;border:1px solid #f0c080;border-radius:4px;padding:2px 7px;font-size:10px;color:#a05000;margin-left:4px;font-weight:normal}
 </style>
 
 <div class="tax-main-wrapper">
 
-  <!-- LEFT: Input Form -->
   <div class="tax-form-section">
-    <h2>Tax Calculator Input</h2>
+    <h2>Tax Calculator Input <small style="font-size:13px;color:#888;">v2</small></h2>
     <form id="tax-calculator-form">
 
-      <p class="section-label">Programme & Entity</p>
+      <p class="section-label">Entity &amp; Delivery</p>
 
       <div class="tax-form-row">
         <label for="legal_entity">Legal Entity *</label>
         <div class="fw">
-          <select name="legal_entity" id="legal_entity" required onchange="updateSkuPreview()">
+          <select name="legal_entity" id="legal_entity" required onchange="onEntityOrTypeChange()">
             <option value="">-- Select --</option>
             <?php foreach ($legalEntities as $code => $label): ?>
               <option value="<?= $block->escapeHtmlAttr($code) ?>"><?= $block->escapeHtml($label) ?></option>
             <?php endforeach; ?>
           </select>
-          <p class="fhelp">Invoicing entity — used to construct the Magento product SKU and determine fallback rate.</p>
         </div>
       </div>
 
@@ -69,16 +72,12 @@ $countries          = $block->getCountries();
               <option value="<?= $block->escapeHtmlAttr($code) ?>"><?= $block->escapeHtml($label) ?></option>
             <?php endforeach; ?>
           </select>
-          <p class="fhelp">Campus where the programme is delivered. Use NA for online programmes, Cases and Food.</p>
         </div>
       </div>
 
       <div class="tax-form-row">
-        <label for="tax_product_code_preview">SKU preview</label>
-        <div class="fw">
-          <div class="sku-preview" id="sku-preview">{legalEntity}_{tax_product_code}_{deliveryLocation}</div>
-          <p class="fhelp">This is the Magento product SKU that must exist. Set via line items tax_product_code below.</p>
-        </div>
+        <label>SKU preview</label>
+        <div class="fw"><div class="sku-preview" id="sku-preview">{legalEntity}_{OL|IP}_{family}_{GT1W|LT1W|NA}_{pdl}</div></div>
       </div>
 
       <hr class="section-sep">
@@ -87,30 +86,45 @@ $countries          = $block->getCountries();
       <div class="tax-form-row">
         <label for="customer_type">Customer Type *</label>
         <div class="fw">
-          <select name="customer_type" id="customer_type" required>
+          <select name="customer_type" id="customer_type" required onchange="onEntityOrTypeChange()">
             <option value="B2B">B2B — Business</option>
             <option value="B2C">B2C — Individual</option>
           </select>
         </div>
       </div>
 
-      <div class="checkbox-row">
-        <input type="checkbox" name="is_valid_vat" id="is_valid_vat" value="1">
-        <label for="is_valid_vat">isValidVat — customer holds a valid VAT registration</label>
+      <div id="row-tax-status" class="tax-form-row">
+        <label for="tax_status">Tax Status <span class="badge-b2b">B2B</span></label>
+        <div class="fw">
+          <select name="tax_status" id="tax_status">
+            <?php foreach ($taxStatuses as $value => $label): ?>
+              <option value="<?= $block->escapeHtmlAttr($value) ?>"><?= $block->escapeHtml($label) ?></option>
+            <?php endforeach; ?>
+          </select>
+          <p class="fhelp">Tax Exempt = B2B_EXEMPT (0%). Wins over all other logic including GST declaration.</p>
+        </div>
       </div>
 
-      <div class="checkbox-row">
-        <input type="checkbox" name="gst_exempt" id="gst_exempt" value="1">
-        <label for="gst_exempt">gstExempt — customer is GST exempt (Singapore consent form)</label>
+      <div id="row-gst-declaration" class="checkbox-row" style="display:none">
+        <input type="checkbox" name="gst_declaration_accepted" id="gst_declaration_accepted" value="1">
+        <label for="gst_declaration_accepted">
+          GST Declaration Accepted
+          <span class="badge-sgp">SGP</span><span class="badge-b2b">B2B</span>
+          <br><small style="color:#888;font-weight:normal;">Checked = B2B_GST_EXEMPT (0% GST). Applies to any programme type.</small>
+        </label>
       </div>
 
-      <div class="checkbox-row">
-        <input type="checkbox" name="is_tax_registered" id="is_tax_registered" value="1">
-        <label for="is_tax_registered">isTaxRegistered — customer is tax registered in their country</label>
+      <div id="row-outside-sg" class="checkbox-row" style="display:none">
+        <input type="checkbox" name="outside_sg" id="outside_sg" value="1" checked>
+        <label for="outside_sg">
+          Outside Singapore
+          <span class="badge-sgp">SGP</span><span class="badge-b2c">B2C + OOP</span>
+          <br><small style="color:#888;font-weight:normal;">Checked (outside SG) = use actual billing country. Unchecked (inside SG) = override billing to SG, charge 9% GST.</small>
+        </label>
       </div>
 
       <hr class="section-sep">
-      <p class="section-label">Billing & Location</p>
+      <p class="section-label">Billing</p>
 
       <div class="tax-form-row">
         <label for="billing_country">Billing Country *</label>
@@ -121,25 +135,8 @@ $countries          = $block->getCountries();
               <option value="<?= $block->escapeHtmlAttr($code) ?>"><?= $block->escapeHtml($name) ?></option>
             <?php endforeach; ?>
           </select>
-          <p class="fhelp">Customer billing address country — primary input to Magento tax engine.</p>
         </div>
       </div>
-
-      <div class="tax-form-row">
-        <label for="participant_country">Participant Country</label>
-        <div class="fw">
-          <select name="participant_country" id="participant_country">
-            <option value="">-- Not specified --</option>
-            <?php foreach ($countries as $code => $name): ?>
-              <option value="<?= $block->escapeHtmlAttr($code) ?>"><?= $block->escapeHtml($name) ?></option>
-            <?php endforeach; ?>
-          </select>
-          <p class="fhelp">Where participant is physically present during the programme. OOP + Singapore override: if legalEntity=SGP and this=SG, billing country is overridden to SG.</p>
-        </div>
-      </div>
-
-      <hr class="section-sep">
-      <p class="section-label">Financial</p>
 
       <div class="tax-form-row">
         <label for="subtotal">Subtotal *</label>
@@ -158,14 +155,14 @@ $countries          = $block->getCountries();
       <div class="tax-form-row">
         <label for="vat_number">VAT Number</label>
         <div class="fw">
-          <input type="text" name="vat_number" id="vat_number" placeholder="Optional">
+          <input type="text" name="vat_number" id="vat_number" placeholder="Optional — audit log only">
         </div>
       </div>
 
       <div class="tax-form-row">
         <label for="billing_system">Billing System</label>
         <div class="fw">
-          <input type="text" name="billing_system" id="billing_system" placeholder="PeopleSoft, Salesforce…">
+          <input type="text" name="billing_system" id="billing_system" placeholder="Salesforce, PeopleSoft…">
         </div>
       </div>
 
@@ -175,13 +172,14 @@ $countries          = $block->getCountries();
       <div class="tax-form-row">
         <label for="line_items">Line Items *<br><small>(JSON)</small></label>
         <div class="fw">
-          <textarea name="line_items" id="line_items" rows="9" required></textarea>
-          <p class="fhelp">Each item needs <strong>tax_product_code</strong>, <strong>price</strong>, <strong>qty</strong>.<br>
-          The final Magento SKU = legalEntity + "_" + tax_product_code + "_" + deliveryLocation.</p>
+          <textarea name="line_items" id="line_items" rows="12" required></textarea>
+          <p class="fhelp">Required: <strong>product_family</strong>, <strong>delivery_mode</strong>, <strong>price</strong>, <strong>qty</strong>.<br>
+          <strong>duration</strong> (days) only for OEP/CSP + F2F. Missing defaults to GT1W.</p>
           <div class="code-eg">[
   {
-    "tax_product_code": "OL_OOP_NA",
-    "sku": "EXT-001",
+    "product_family": "OOP",
+    "delivery_mode": "Online",
+    "duration": null,
     "name": "Online Open Programme",
     "price": 10000.00,
     "qty": 1
@@ -198,7 +196,6 @@ $countries          = $block->getCountries();
     </form>
   </div>
 
-  <!-- RIGHT: Result Panel -->
   <div id="tax-result" class="tax-result">
     <h2>Tax Calculation Result</h2>
     <div id="tax-summary" class="tax-summary"></div>
@@ -212,15 +209,15 @@ $countries          = $block->getCountries();
 <script>
 require(['jquery','Magento_Ui/js/modal/alert'], function ($, uiAlert) {
     $(function () {
-        var $form   = $('#tax-calculator-form');
-        var $btn    = $('.tax-calculate-btn');
-        var $result = $('#tax-result');
-        var $sum    = $('#tax-summary');
-        var $json   = $('#tax-result-content');
-        var $tog    = $('#toggle-json');
-        var url     = '<?= $block->escapeJs($block->getCalculateUrl()) ?>';
+        var $form = $('#tax-calculator-form');
+        var $btn  = $('.tax-calculate-btn');
+        var $res  = $('#tax-result');
+        var $sum  = $('#tax-summary');
+        var $json = $('#tax-result-content');
+        var $tog  = $('#toggle-json');
+        var url   = '<?= $block->escapeJs($block->getCalculateUrl()) ?>';
 
-        var eg = [{"tax_product_code":"OL_OOP_NA","sku":"EXT-001","name":"Online Open Programme","price":10000,"qty":1}];
+        var eg = [{"product_family":"OOP","delivery_mode":"Online","duration":null,"name":"Online Open Programme","price":10000,"qty":1}];
         $('#line_items').val(JSON.stringify(eg, null, 2));
 
         $tog.on('click', function () {
@@ -230,32 +227,23 @@ require(['jquery','Magento_Ui/js/modal/alert'], function ($, uiAlert) {
 
         $form.on('submit', function (e) {
             e.preventDefault();
-
             try {
-                var parsed = JSON.parse($('#line_items').val());
-                if (!Array.isArray(parsed) || parsed.length === 0) throw new Error('Must be a non-empty JSON array');
-            } catch (err) {
-                uiAlert({ title: 'Invalid Line Items', content: 'line_items: ' + err.message });
-                return;
-            }
-
-            var params = $form.serialize();
-            // Optional bool fields — only append when checked; absent = null on server
+                var p = JSON.parse($('#line_items').val());
+                if (!Array.isArray(p) || !p.length) throw new Error('Must be a non-empty JSON array');
+            } catch (err) { uiAlert({ title: 'Invalid Line Items', content: err.message }); return; }
 
             $btn.prop('disabled', true);
-            $result.removeClass('success warning error');
-            $sum.empty();
-            $json.hide().text('');
-            $tog.hide();
+            $res.removeClass('success warning error');
+            $sum.empty(); $json.hide().text(''); $tog.hide();
 
             $.ajax({
-                url: url, type: 'POST', data: params, showLoader: true,
+                url: url, type: 'POST', data: $form.serialize(), showLoader: true,
                 success: function (r) {
                     $btn.prop('disabled', false);
-                    $result.addClass(r.status || 'error');
-                    var cur  = r.currency || '';
-                    var msg  = r.message ? '<br><small style="color:#c00">' + $('<div>').text(r.message).html() + '</small>' : '';
-                    var fb   = r.fallback_applied ? ' <small>(fallback)</small>' : '';
+                    $res.addClass(r.status || 'error');
+                    var cur = r.currency || '';
+                    var msg = r.message ? '<br><small style="color:#c00">' + $('<div>').text(r.message).html() + '</small>' : '';
+                    var fb  = r.fallback_applied ? ' <small>(fallback)</small>' : '';
                     $sum.html(
                         card('Status',      (r.status||'').toUpperCase() + msg) +
                         card('Tax Rate',    (r.tax_rate    != null ? r.tax_rate    : '-') + '%' + fb) +
@@ -264,26 +252,36 @@ require(['jquery','Magento_Ui/js/modal/alert'], function ($, uiAlert) {
                         card('Grand Total', (r.grand_total != null ? r.grand_total : '-') + ' ' + cur) +
                         card('Tax Comment', r.tax_comment || '—')
                     );
-                    $json.text(JSON.stringify(r, null, 2));
-                    $tog.show();
+                    $json.text(JSON.stringify(r, null, 2)); $tog.show();
                 },
-                error: function (xhr, s, err) {
-                    $btn.prop('disabled', false);
-                    uiAlert({ title: 'Request Failed', content: 'Error: ' + err });
-                }
+                error: function (xhr, s, err) { $btn.prop('disabled', false); uiAlert({ title: 'Request Failed', content: err }); }
             });
         });
 
-        function card(label, val) {
-            return '<div class="summary-card"><h4>' + label + '</h4><p>' + val + '</p></div>';
-        }
+        function card(l, v) { return '<div class="summary-card"><h4>' + l + '</h4><p>' + v + '</p></div>'; }
     });
 });
 
+function onEntityOrTypeChange() {
+    var le  = document.getElementById('legal_entity').value;
+    var ct  = document.getElementById('customer_type').value;
+    var sgp = le === 'SGP';
+    var b2b = ct === 'B2B';
+    var b2c = ct === 'B2C';
+
+    document.getElementById('row-tax-status').style.display      = b2b ? '' : 'none';
+    document.getElementById('row-gst-declaration').style.display = (sgp && b2b) ? '' : 'none';
+    document.getElementById('row-outside-sg').style.display      = (sgp && b2c) ? '' : 'none';
+
+    if (!sgp || !b2b) document.getElementById('gst_declaration_accepted').checked = false;
+    if (!sgp || !b2c) document.getElementById('outside_sg').checked = true;
+
+    updateSkuPreview();
+}
+
 function updateSkuPreview() {
     var le  = document.getElementById('legal_entity').value || '{legalEntity}';
-    var pdl = document.getElementById('programme_delivery_location').value || '{deliveryLocation}';
-    document.getElementById('sku-preview').textContent =
-        le + '_{tax_product_code}_' + pdl;
+    var pdl = document.getElementById('programme_delivery_location').value || '{pdl}';
+    document.getElementById('sku-preview').textContent = le + '_{OL|IP}_{family}_{GT1W|LT1W|NA}_' + pdl;
 }
 </script>

@@ -1,12 +1,15 @@
 <?php
 declare(strict_types=1);
+
 namespace Insead\TaxApi\Controller\Adminhtml\Log;
+
 use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\ResultFactory;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Ui\Component\MassAction\Filter;
 use Insead\TaxApi\Model\ResourceModel\TaxCalculationLog\CollectionFactory;
+
 class MassDelete extends Action
 {
     public function __construct(
@@ -16,6 +19,7 @@ class MassDelete extends Action
     ) {
         parent::__construct($context);
     }
+
     public function execute()
     {
         $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
@@ -36,6 +40,7 @@ class MassDelete extends Action
         }
         return $resultRedirect->setPath('*/*/index');
     }
+
     protected function _isAllowed(): bool
     {
         return $this->_authorization->isAllowed('Insead_TaxApi::log');
